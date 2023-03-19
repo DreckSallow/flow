@@ -1,3 +1,9 @@
+use cli::App;
+
+mod cli;
+mod db;
+mod task;
+
 fn main() {
-    println!("Hello, world!");
+    App::run();
 }
