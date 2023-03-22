@@ -1,6 +1,11 @@
-use std::{io, path::PathBuf};
-
 use clap::{command, Parser, Subcommand};
+use rusqlite::Error;
+use std::path::PathBuf;
+
+use crate::{
+    db::Db,
+    project::{ProjectParams, ProjectProgram},
+};
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
@@ -26,9 +31,18 @@ pub enum Commands {
 
 pub struct App;
 
+#[derive(Debug)]
+pub enum AppError {
+    DbConnection(Error),
+}
+
 impl App {
-    pub fn run() -> io::Result<()> {
+    pub fn run() -> Result<(), AppError> {
         let cli = Cli::parse();
+        let db = match Db::open() {
+            Ok(conn) => conn,
+            Err(e) => return Err(AppError::DbConnection(e)),
+        };
 
         match cli.command {
             Commands::Task { description } => {
@@ -36,7 +50,7 @@ impl App {
                 Ok(())
             }
             Commands::Project { new, path } => {
-                println!("new: {} , path {}", new, path.display());
+                ProjectProgram::project_run(ProjectParams::new(new, path), &db);
                 Ok(())
             }
         }
