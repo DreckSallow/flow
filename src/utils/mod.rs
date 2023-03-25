@@ -4,6 +4,9 @@ use std::{
 };
 
 pub mod directory;
+pub mod table;
+
+pub mod test_utils;
 
 pub fn get_current_directory() -> io::Result<PathBuf> {
     env::current_dir()
