@@ -19,7 +19,9 @@ pub enum Commands {
     Project {
         #[arg(short, long)]
         new: bool,
-        path: PathBuf,
+        path: Option<PathBuf>,
+        #[command(subcommand)]
+        command: Option<ProjectCommands>,
     },
     /// Task is a subcommand to manage task related to the current project
     Task {
@@ -27,6 +29,12 @@ pub enum Commands {
         #[arg(short, long)]
         description: String,
     },
+}
+
+#[derive(Subcommand, Debug)]
+pub enum ProjectCommands {
+    /// List all projects
+    List,
 }
 
 pub struct App;
@@ -49,8 +57,14 @@ impl App {
                 println!("description: {}", description);
                 Ok(())
             }
-            Commands::Project { new, path } => {
-                ProjectProgram::project_run(ProjectParams::new(new, path), &db);
+            Commands::Project { new, path, command } => {
+                if let Some(c) = command {
+                    match c {
+                        ProjectCommands::List => ProjectProgram::run_list(&db),
+                    }
+                } else if let Some(p) = path {
+                    ProjectProgram::run_default(ProjectParams::new(new, p), &db);
+                }
                 Ok(())
             }
         }
