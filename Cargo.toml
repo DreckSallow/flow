@@ -10,3 +10,5 @@ clap = { version = "4.1.4", features = ["derive"] }
 clap_complete = "4.1.2"
 crossterm = "0.26.0"
 rusqlite = { version = "0.28.0", features = ["bundled"] }
+chrono = "0.4.24"
+directories = "5.0"
