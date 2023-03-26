@@ -3,8 +3,10 @@ use rusqlite::Error;
 use std::path::PathBuf;
 
 use crate::{
+    app_data::AppData,
     db::Db,
     project::{ProjectParams, ProjectProgram},
+    utils,
 };
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
@@ -35,6 +37,9 @@ pub enum Commands {
 pub enum ProjectCommands {
     /// List all projects
     List,
+    Switch {
+        path: PathBuf,
+    },
 }
 
 pub struct App;
@@ -51,6 +56,8 @@ impl App {
             Ok(conn) => conn,
             Err(e) => return Err(AppError::DbConnection(e)),
         };
+        let current_project_id = utils::data::current_project();
+        let app_data = AppData::new(db, current_project_id);
 
         match cli.command {
             Commands::Task { description } => {
@@ -60,10 +67,15 @@ impl App {
             Commands::Project { new, path, command } => {
                 if let Some(c) = command {
                     match c {
-                        ProjectCommands::List => ProjectProgram::run_list(&db),
+                        ProjectCommands::List => ProjectProgram::run_list(&app_data),
+                        ProjectCommands::Switch { path } => {
+                            ProjectProgram::run_switch(&app_data, path)
+                        }
                     }
                 } else if let Some(p) = path {
-                    ProjectProgram::run_default(ProjectParams::new(new, p), &db);
+                    ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
+                } else {
+                    println!("The current project is: {}", app_data.current_project_id);
                 }
                 Ok(())
             }

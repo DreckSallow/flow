@@ -1,22 +1,22 @@
 pub mod config;
-mod db_model;
+pub mod db_model;
 mod project;
 mod test;
 pub use project::Project;
 
 use self::db_model::ProjectModelUtils;
 use crate::{
-    db::Db,
+    app_data::AppData,
     utils::{self, table},
 };
 pub use config::ProjectParams;
 
-use std::fs;
+use std::{fs, path::Path};
 
 pub struct ProjectProgram;
 
 impl ProjectProgram {
-    pub fn run_default(params: ProjectParams, db: &Db) {
+    pub fn run_default(params: ProjectParams, app_data: &AppData) {
         let path_complete = match utils::get_current_directory() {
             Err(e) => return eprintln!("{}", e.to_string()),
             Ok(mut p) => {
@@ -26,7 +26,7 @@ impl ProjectProgram {
         };
         if params.new && !path_complete.exists() {
             match fs::create_dir(&path_complete) {
-                Ok(()) => println!("Folder created!: {}", path_complete.display()),
+                Ok(()) => println!("Folder created!: {:?}", path_complete),
                 Err(e) => eprintln!("{}", e),
             }
         }
@@ -43,7 +43,7 @@ impl ProjectProgram {
             Err(e) => return eprintln!("{}", e),
         };
 
-        let projects = match ProjectModelUtils::get_projects(db) {
+        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
             Ok(projects) => projects,
             Err(e) => return eprintln!("Error getting the Projects: {}", e),
         };
@@ -55,13 +55,13 @@ impl ProjectProgram {
             );
         }
 
-        if let Err(e) = ProjectModelUtils::create_project(db, &path_complete) {
+        if let Err(e) = ProjectModelUtils::create_project(&app_data.db, &path_complete) {
             return eprintln!("{:?}", e);
         }
     }
 
-    pub fn run_list(db: &Db) {
-        let projects = match ProjectModelUtils::get_projects(db) {
+    pub fn run_list(app_data: &AppData) {
+        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
             Ok(projects) => projects,
             Err(e) => return eprintln!("Error getting the Projects: {}", e),
         };
@@ -74,5 +74,27 @@ impl ProjectProgram {
             ]);
         }
         println!("{}", table_format.get_table(1));
+    }
+
+    pub fn run_switch<P: AsRef<Path>>(app_data: &AppData, path: P) {
+        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
+            Ok(projects) => projects,
+            Err(e) => return eprintln!("Error getting the Projects: {}", e),
+        };
+
+        let path = path.as_ref().to_path_buf().display().to_string();
+
+        if !projects.contains_key(&path) {
+            return eprintln!("The path {} is not correct!", path);
+        }
+
+        match utils::data::switch_current_project(projects.get(&path).unwrap().id) {
+            Ok(_) => {
+                println!("Change the current project to : {}", path);
+            }
+            Err(_) => {
+                println!("It was not possible to make the change");
+            }
+        }
     }
 }

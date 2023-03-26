@@ -6,10 +6,15 @@ use std::{
 pub mod directory;
 pub mod table;
 
+pub mod data;
 pub mod test_utils;
 
 pub fn get_current_directory() -> io::Result<PathBuf> {
     env::current_dir()
+}
+
+pub fn get_current_exe() -> io::Result<PathBuf> {
+    env::current_exe()
 }
 
 pub fn canonicalize_path<P: AsRef<Path>>(path: P) -> io::Result<PathBuf> {

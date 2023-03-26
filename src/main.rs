@@ -1,5 +1,6 @@
 use cli::App;
 
+mod app_data;
 mod cli;
 mod db;
 mod project;

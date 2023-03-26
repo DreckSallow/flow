@@ -72,4 +72,12 @@ impl ProjectModelUtils {
         let id: u32 = db.0.last_insert_rowid().to_string().parse().unwrap();
         Ok(Project::new(id, path.to_owned(), vec![]))
     }
+
+    pub fn get_by_id(id: u32, db: &Db) -> Result<Project> {
+        let mut stmt = db.0.prepare("SELECT * FROM projects WHERE id = ?1")?;
+        stmt.query_row([id], |row| {
+            let path: String = row.get(1)?;
+            Ok(Project::new(row.get(0)?, PathBuf::from(path), vec![]))
+        })
+    }
 }

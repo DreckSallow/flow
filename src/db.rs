@@ -53,6 +53,14 @@ impl Db {
             (),
         )?;
 
+        conn.execute(
+            "INSERT OR IGNORE INTO projects (id, path) values (?1,?2)",
+            [
+                1.to_string(),
+                Directory::local_data_dir().display().to_string(),
+            ],
+        )?;
+
         Ok(Db(conn))
     }
 }
