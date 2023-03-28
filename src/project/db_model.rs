@@ -40,30 +40,56 @@ impl ProjectModelUtils {
             let project = Project::new(project_id, PathBuf::from(project_path), vec![]);
 
             if task_id.is_ok() && task_desc.is_ok() {
-                let task = Task::new(task_id.unwrap(), task_desc.unwrap().as_str());
-                return Ok((project, Some(task)));
+                return Ok((project, Some((task_id.unwrap(), task_desc.unwrap()))));
             }
 
             Ok((project, None))
         })?;
 
-        mapped.for_each(|r| {
-            if let Err(_) = r {
-                return;
-            }
-            let (project, task) = r.unwrap();
-            let project_path = &project.path.display().to_string();
+        {
+            let mut temp_tasks: HashMap<u32, Vec<(u32, String)>> = HashMap::new();
+            let mut projects = HashMap::new();
 
-            if hash_projects.contains_key(project_path) && task.is_some() {
-                hash_projects
-                    .get_mut(project_path)
+            mapped.for_each(|r| {
+                if let Err(_) = r {
+                    return;
+                }
+                let (project, task_data) = r.unwrap();
+
+                //Group tasks by project_id:
+                if temp_tasks.contains_key(&project.id) && task_data.is_some() {
+                    temp_tasks
+                        .get_mut(&project.id)
+                        .unwrap()
+                        .push(task_data.unwrap())
+                } else {
+                    if let Some(t) = task_data {
+                        temp_tasks.insert(project.id, vec![t]);
+                    } else {
+                        temp_tasks.insert(project.id, vec![]);
+                    }
+                }
+
+                //Save projects temporary by path:
+                if !projects.contains_key(&project.path.display().to_string()) {
+                    projects.insert(project.path.display().to_string(), project);
+                }
+            });
+
+            for (key, mut p) in projects {
+                // Created the tasks filtered
+                let tasks: Vec<Task> = temp_tasks
+                    .get(&p.id)
                     .unwrap()
-                    .tasks
-                    .push(task.unwrap());
-            } else {
-                hash_projects.insert(project_path.clone(), project);
+                    .iter()
+                    .enumerate()
+                    .map(|(i, t)| Task::new(t.0, &t.1, (i + 1) as u32))
+                    .collect();
+
+                p.tasks = tasks;
+                hash_projects.insert(key, p);
             }
-        });
+        }
 
         Ok(hash_projects)
     }
