@@ -6,6 +6,7 @@ use crate::{
     app_data::AppData,
     db::Db,
     project::{ProjectParams, ProjectProgram},
+    task::TaskProgram,
     utils,
 };
 #[derive(Parser)]
@@ -29,7 +30,9 @@ pub enum Commands {
     Task {
         /// Description of the task
         #[arg(short, long)]
-        description: String,
+        description: Option<String>,
+        #[command(subcommand)]
+        command: Option<TaskCommands>,
     },
 }
 
@@ -40,6 +43,21 @@ pub enum ProjectCommands {
     Switch {
         path: PathBuf,
     },
+}
+
+#[derive(Subcommand, Debug)]
+pub enum TaskCommands {
+    ///List all tasks related to the current project
+    List {
+        /// Expand the table output adding more data
+        #[arg(short, long)]
+        expand: bool,
+        ///Order by: "number" | "desc"
+        #[arg(short, long)]
+        order_by: Option<String>,
+    },
+    /// Remove a task by 'N-Id' column
+    Rm { id: u32 },
 }
 
 pub struct App;
@@ -60,8 +78,21 @@ impl App {
         let app_data = AppData::new(db, current_project_id);
 
         match cli.command {
-            Commands::Task { description } => {
-                println!("description: {}", description);
+            Commands::Task {
+                description,
+                command,
+            } => {
+                if let Some(c) = command {
+                    match c {
+                        TaskCommands::List { expand, order_by } => {
+                            TaskProgram::run_list(&app_data, expand, order_by)
+                        }
+                        TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
+                    }
+                } else if let Some(desc) = description {
+                    TaskProgram::run_default(&app_data, &desc);
+                }
+
                 Ok(())
             }
             Commands::Project { new, path, command } => {
