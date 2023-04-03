@@ -109,6 +109,11 @@ impl ProjectModelUtils {
         Ok(Project::new(id, path.to_owned(), vec![]))
     }
 
+    pub fn remove_project(db: &Db, id: u32) -> Result<()> {
+        db.0.execute("DELETE FROM projects WHERE id = ?1", [id])?;
+        Ok(())
+    }
+
     pub fn get_by_id(db: &Db, id: u32) -> Result<Project> {
         let mut stmt = db.0.prepare("SELECT * FROM projects WHERE id = ?1")?;
         stmt.query_row([id], |row| {
