@@ -109,7 +109,7 @@ impl ProjectModelUtils {
         Ok(Project::new(id, path.to_owned(), vec![]))
     }
 
-    pub fn get_by_id(id: u32, db: &Db) -> Result<Project> {
+    pub fn get_by_id(db: &Db, id: u32) -> Result<Project> {
         let mut stmt = db.0.prepare("SELECT * FROM projects WHERE id = ?1")?;
         stmt.query_row([id], |row| {
             let path: String = row.get(1)?;

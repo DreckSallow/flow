@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use crate::{
     app_data::AppData,
     db::Db,
-    project::{ProjectParams, ProjectProgram},
+    project::{db_model::ProjectModelUtils, ProjectParams, ProjectProgram},
     task::{TaskProgram, TaskStatus},
     utils,
 };
@@ -40,9 +40,8 @@ pub enum Commands {
 pub enum ProjectCommands {
     /// List all projects
     List,
-    Switch {
-        path: PathBuf,
-    },
+    /// Set the current project, and get related tasks
+    Switch { id: u32 },
 }
 
 #[derive(Subcommand, Debug)]
@@ -117,14 +116,17 @@ impl App {
                 if let Some(c) = command {
                     match c {
                         ProjectCommands::List => ProjectProgram::run_list(&app_data),
-                        ProjectCommands::Switch { path } => {
-                            ProjectProgram::run_switch(&app_data, path)
-                        }
+                        ProjectCommands::Switch { id } => ProjectProgram::run_switch(&app_data, id),
                     }
                 } else if let Some(p) = path {
                     ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
                 } else {
-                    println!("The current project is: {}", app_data.current_project_id);
+                    match ProjectModelUtils::get_by_id(&app_data.db, app_data.current_project_id) {
+                        Ok(p) => {
+                            println!("Current Project: {}", p.path.display());
+                        }
+                        Err(_) => eprintln!("Cannot get current project :("),
+                    }
                 }
                 Ok(())
             }
