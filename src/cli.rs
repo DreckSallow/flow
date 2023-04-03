@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use crate::{
     app_data::AppData,
     db::Db,
-    project::{ProjectParams, ProjectProgram},
+    project::{db_model::ProjectModelUtils, ProjectParams, ProjectProgram},
     task::{TaskProgram, TaskStatus},
     utils,
 };
@@ -121,7 +121,12 @@ impl App {
                 } else if let Some(p) = path {
                     ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
                 } else {
-                    println!("The current project is: {}", app_data.current_project_id);
+                    match ProjectModelUtils::get_by_id(&app_data.db, app_data.current_project_id) {
+                        Ok(p) => {
+                            println!("Current Project: {}", p.path.display());
+                        }
+                        Err(_) => eprintln!("Cannot get current project :("),
+                    }
                 }
                 Ok(())
             }
