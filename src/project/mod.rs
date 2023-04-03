@@ -75,6 +75,28 @@ impl ProjectProgram {
         }
         println!("{}", table_format.get_table(1));
     }
+    pub fn remove_project(app_data: &AppData, id: u32) {
+        let project_finded = match ProjectModelUtils::get_projects(&app_data.db) {
+            Ok(p) => p.into_values().find(|p| p.id == id),
+            Err(_) => return eprintln!("Error tryng to get the projects"),
+        };
+
+        if project_finded.is_none() {
+            return eprintln!("The project with id: {} not exist.", id);
+        }
+
+        if id == 1 {
+            return eprintln!("Cannot delete the main project.");
+        }
+
+        match ProjectModelUtils::remove_project(&app_data.db, id) {
+            Ok(_) => println!(
+                "Deleted Project: {}",
+                project_finded.unwrap().path.display()
+            ),
+            Err(_) => eprintln!("Error removing the project."),
+        }
+    }
 
     pub fn run_switch(app_data: &AppData, id: u32) {
         let project = match ProjectModelUtils::get_by_id(&app_data.db, id) {
