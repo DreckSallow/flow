@@ -40,9 +40,8 @@ pub enum Commands {
 pub enum ProjectCommands {
     /// List all projects
     List,
-    Switch {
-        path: PathBuf,
-    },
+    /// Set the current project, and get related tasks
+    Switch { id: u32 },
 }
 
 #[derive(Subcommand, Debug)]
@@ -117,9 +116,7 @@ impl App {
                 if let Some(c) = command {
                     match c {
                         ProjectCommands::List => ProjectProgram::run_list(&app_data),
-                        ProjectCommands::Switch { path } => {
-                            ProjectProgram::run_switch(&app_data, path)
-                        }
+                        ProjectCommands::Switch { id } => ProjectProgram::run_switch(&app_data, id),
                     }
                 } else if let Some(p) = path {
                     ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);

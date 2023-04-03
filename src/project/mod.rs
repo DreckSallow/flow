@@ -11,7 +11,7 @@ use crate::{
 };
 pub use config::ProjectParams;
 
-use std::{fs, path::Path};
+use std::fs;
 
 pub struct ProjectProgram;
 
@@ -76,21 +76,15 @@ impl ProjectProgram {
         println!("{}", table_format.get_table(1));
     }
 
-    pub fn run_switch<P: AsRef<Path>>(app_data: &AppData, path: P) {
-        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
-            Ok(projects) => projects,
-            Err(e) => return eprintln!("Error getting the Projects: {}", e),
+    pub fn run_switch(app_data: &AppData, id: u32) {
+        let project = match ProjectModelUtils::get_by_id(&app_data.db, id) {
+            Ok(p) => p,
+            Err(_) => return eprintln!("The project with id: {} not exist", id),
         };
 
-        let path = path.as_ref().to_path_buf().display().to_string();
-
-        if !projects.contains_key(&path) {
-            return eprintln!("The path {} is not correct!", path);
-        }
-
-        match utils::data::switch_current_project(projects.get(&path).unwrap().id) {
+        match utils::data::switch_current_project(project.id) {
             Ok(_) => {
-                println!("Change the current project to : {}", path);
+                println!("Change the current project to : {}", project.path.display());
             }
             Err(_) => {
                 println!("It was not possible to make the change");
