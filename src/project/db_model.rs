@@ -2,7 +2,10 @@ use std::{collections::HashMap, path::PathBuf};
 
 use rusqlite::Result;
 
-use crate::{db::Db, task::Task};
+use crate::{
+    db::Db,
+    task::{Task, TaskStatus},
+};
 
 use super::Project;
 
@@ -10,6 +13,7 @@ pub struct ProjectModel<'a> {
     db: &'a Db,
 }
 
+#[allow(dead_code)]
 impl<'a> ProjectModel<'a> {
     pub fn get_projects(self) -> Result<HashMap<String, Project>> {
         ProjectModelUtils::get_projects(self.db)
@@ -26,7 +30,7 @@ impl ProjectModelUtils {
         let mut s_1 = db
             .0
             .prepare("
-                SELECT p.id, p.path, t.id, t.description, t.date from projects p LEFT JOIN tasks t ON t.project_id = p.id
+                SELECT p.id, p.path, t.id, t.description, t.date, t.status from projects p LEFT JOIN tasks t ON t.project_id = p.id
             ")?;
 
         let mut hash_projects: HashMap<String, Project> = HashMap::new();
@@ -37,17 +41,21 @@ impl ProjectModelUtils {
 
             let task_id: Result<u32> = row.get(2);
             let task_desc: Result<String> = row.get(3);
+            let task_status: Result<String> = row.get(5);
             let project = Project::new(project_id, PathBuf::from(project_path), vec![]);
 
-            if task_id.is_ok() && task_desc.is_ok() {
-                return Ok((project, Some((task_id.unwrap(), task_desc.unwrap()))));
+            if task_id.is_ok() && task_desc.is_ok() && task_status.is_ok() {
+                return Ok((
+                    project,
+                    Some((task_id.unwrap(), task_desc.unwrap(), task_status.unwrap())),
+                ));
             }
 
             Ok((project, None))
         })?;
 
         {
-            let mut temp_tasks: HashMap<u32, Vec<(u32, String)>> = HashMap::new();
+            let mut temp_tasks: HashMap<u32, Vec<(u32, String, String)>> = HashMap::new();
             let mut projects = HashMap::new();
 
             mapped.for_each(|r| {
@@ -83,7 +91,9 @@ impl ProjectModelUtils {
                     .unwrap()
                     .iter()
                     .enumerate()
-                    .map(|(i, t)| Task::new(t.0, &t.1, (i + 1) as u32))
+                    .map(|(i, t)| {
+                        Task::new(t.0, &t.1, (i + 1) as u32, TaskStatus::from(t.2.clone()))
+                    })
                     .collect();
 
                 p.tasks = tasks;

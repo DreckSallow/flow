@@ -47,6 +47,7 @@ impl Db {
               id INTEGER PRIMARY KEY,
               description TEXT NOT NULL UNIQUE,
               date TEXT NOT NULL,
+              status TEXT NOT NULL CHECK(status in ('In progress','Stop','Complete','Not started')),
               project_id INTEGER NOT NULL references projects(id)
             )
           ",

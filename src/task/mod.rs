@@ -1,6 +1,7 @@
 pub mod db_model;
 mod task;
-pub use task::Task;
+
+pub use task::{Task, TaskStatus};
 
 use crate::{
     app_data::AppData,
@@ -41,18 +42,19 @@ impl TaskProgram {
             }
 
             if expand {
-                table.add_headers(vec!["N-id", "Description", "Id"]);
+                table.add_headers(vec!["N-id", "Description", "Status", "Id"]);
             } else {
-                table.add_headers(vec!["N-id", "Description"]);
+                table.add_headers(vec!["N-id", "Description", "Status"]);
             }
 
             for task in tasks {
                 let id = RowCell::Single(task.temp_id.to_string());
                 let desc = RowCell::Single(task.description.clone());
+                let status = RowCell::Single(task.status.to_string());
                 let row = if expand {
-                    vec![id, desc, RowCell::Single(task.id.to_string())]
+                    vec![id, desc, status, RowCell::Single(task.id.to_string())]
                 } else {
-                    vec![id, desc]
+                    vec![id, desc, status]
                 };
 
                 table.insert_row(row);
@@ -88,6 +90,72 @@ impl TaskProgram {
                 None => {
                     eprintln!("The task id {} not found", task_temp_id);
                 }
+            }
+        }
+    }
+
+    pub fn run_update_status(app_data: &AppData, tasks_temp_ids: Vec<u32>, status: TaskStatus) {
+        match TaskProgram::get_tasks(app_data) {
+            Some(tasks) => {
+                let task_ids: Vec<u32> = tasks
+                    .iter()
+                    .filter_map(|t| {
+                        if tasks_temp_ids.contains(&t.temp_id) {
+                            Some(t.id)
+                        } else {
+                            None
+                        }
+                    })
+                    .collect();
+                if task_ids.len() == 0 {
+                    return eprintln!("Task not found! :(");
+                }
+
+                let errors: Vec<_> = task_ids
+                    .iter()
+                    .map(|id| TaskModelUtils::update_task_status(&app_data.db, *id, &status))
+                    .filter_map(|r| r.err())
+                    .collect();
+
+                if errors.len() > 0 {
+                    eprintln!("Error updating tasks");
+                    for e in errors {
+                        eprintln!("{}", e);
+                    }
+                } else {
+                    println!("Tasks updated");
+                }
+            }
+            None => {
+                println!("You don't have any tasks.");
+            }
+        }
+    }
+
+    pub fn run_do_task(app_data: &AppData, tasks_temp_id: u32) {
+        if let Some(tasks) = TaskProgram::get_tasks(app_data) {
+            let find_task = tasks.iter().find(|t| t.temp_id == tasks_temp_id);
+            if let None = find_task {
+                return eprintln!("Task not found! :(");
+            }
+
+            // Check if exist another task with the status = 'In Progress':
+            let exist_other = tasks
+                .iter()
+                .find(|t| t.temp_id != tasks_temp_id && t.status == TaskStatus::Start)
+                .is_some();
+
+            if exist_other {
+                return eprintln!(
+                    "There is another task 'In Progress', complete the previous task!"
+                );
+            }
+            let task = find_task.unwrap();
+            match TaskModelUtils::update_task_status(&app_data.db, task.id, &TaskStatus::Start) {
+                Ok(_) => {
+                    println!("Task updated!")
+                }
+                Err(e) => eprintln!("Error updating task: {}", e),
             }
         }
     }

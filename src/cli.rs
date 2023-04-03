@@ -6,7 +6,7 @@ use crate::{
     app_data::AppData,
     db::Db,
     project::{ProjectParams, ProjectProgram},
-    task::TaskProgram,
+    task::{TaskProgram, TaskStatus},
     utils,
 };
 #[derive(Parser)]
@@ -58,6 +58,14 @@ pub enum TaskCommands {
     },
     /// Remove a task by 'N-Id' column
     Rm { id: u32 },
+    /// Mark tasks as In Progress, using the Ids
+    Start { id: u32 },
+    /// Mark tasks as stopped, using the Ids
+    Stop { id: u32 },
+    /// Mark tasks as completed, using the Ids
+    Done { ids: Vec<u32> },
+    /// Mark tasks as completed, using the Ids
+    Reset { ids: Vec<u32> },
 }
 
 pub struct App;
@@ -88,6 +96,16 @@ impl App {
                             TaskProgram::run_list(&app_data, expand, order_by)
                         }
                         TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
+                        TaskCommands::Start { id } => TaskProgram::run_do_task(&app_data, id),
+                        TaskCommands::Stop { id } => {
+                            TaskProgram::run_update_status(&app_data, vec![id], TaskStatus::Stop)
+                        }
+                        TaskCommands::Done { ids } => {
+                            TaskProgram::run_update_status(&app_data, ids, TaskStatus::Done)
+                        }
+                        TaskCommands::Reset { ids } => {
+                            TaskProgram::run_update_status(&app_data, ids, TaskStatus::NoStarted)
+                        }
                     }
                 } else if let Some(desc) = description {
                     TaskProgram::run_default(&app_data, &desc);
