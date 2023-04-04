@@ -44,6 +44,8 @@ pub enum ProjectCommands {
     Switch { id: u32 },
     /// Set the current project, and get related tasks
     Rm { id: u32 },
+    /// Set the current project, reading the current path
+    Use,
 }
 
 #[derive(Subcommand, Debug)]
@@ -120,6 +122,7 @@ impl App {
                         ProjectCommands::List => ProjectProgram::run_list(&app_data),
                         ProjectCommands::Switch { id } => ProjectProgram::run_switch(&app_data, id),
                         ProjectCommands::Rm { id } => ProjectProgram::remove_project(&app_data, id),
+                        ProjectCommands::Use => ProjectProgram::run_use(&app_data),
                     }
                 } else if let Some(p) = path {
                     ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);

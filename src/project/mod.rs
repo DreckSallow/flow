@@ -113,4 +113,30 @@ impl ProjectProgram {
             }
         }
     }
+    pub fn run_use(app_data: &AppData) {
+        let current_path = utils::get_current_directory().unwrap();
+
+        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
+            Ok(list) => list,
+            Err(_) => return eprintln!("Error getting the projects"),
+        };
+
+        let project = match projects.get(&current_path.display().to_string()) {
+            Some(p) => p,
+            None => {
+                return eprintln!(
+                    "The current path: {}, not is a project saved!\nCreate the project before!",
+                    current_path.display()
+                )
+            }
+        };
+
+        match utils::data::switch_current_project(project.id) {
+            Ok(_) => println!(
+                "Set the path: {} as current project",
+                current_path.display()
+            ),
+            Err(_) => eprintln!("Error setting the path as current project"),
+        }
+    }
 }
