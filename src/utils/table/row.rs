@@ -25,16 +25,14 @@ impl Row {
         let cells = {
             let mut cells = vec![];
             for cell in &self.cells {
-                let mut lines = match cell {
-                    RowCell::Multiple(l) => l.clone(),
-                    RowCell::Single(l) => vec![l.to_string()],
-                };
+                let mut lines = cell.get_lines();
                 let max_width = cell.get_sizes().1;
 
                 let missing = self.max_height - lines.len() as u8;
 
                 for _i in 0..missing {
-                    lines.push(utils::num_to_str(&max_width, " "))
+                    let s = utils::num_to_str(&max_width, " ");
+                    lines.push((s.clone(), s.chars().count() as u8))
                 }
 
                 cells.push(lines);
@@ -52,8 +50,8 @@ impl Row {
                 let cell = &cells[col][row];
 
                 internal_row.push_str(&utils::num_to_str(&padd.0, " "));
-                internal_row.push_str(cell);
-                internal_row.push_str(&utils::num_to_str(&(max - cell.chars().count() as u8), " "));
+                internal_row.push_str(&cell.0);
+                internal_row.push_str(&utils::num_to_str(&(max - cell.1), " "));
                 internal_row.push_str(&utils::num_to_str(&padd.1, " "));
                 internal_row.push_str("|");
             }
@@ -76,6 +74,7 @@ impl From<Vec<String>> for Row {
 pub enum RowCell {
     Multiple(Vec<String>),
     Single(String),
+    Styled(String, String),
 }
 
 impl RowCell {
@@ -95,13 +94,30 @@ impl RowCell {
                 (height, width as u8)
             }
             RowCell::Single(l) => (1, l.chars().count() as u8),
+            RowCell::Styled(_, s) => (1, s.chars().count() as u8),
+        }
+    }
+    pub fn get_lines(&self) -> Vec<(String, u8)> {
+        match self {
+            RowCell::Multiple(l) => {
+                let mut each = vec![];
+                for c in l {
+                    each.push((c.clone(), c.chars().count() as u8))
+                }
+
+                each
+            }
+            RowCell::Single(l) => {
+                vec![(l.to_string(), l.chars().count() as u8)]
+            }
+            RowCell::Styled(l, s) => vec![(l.to_string(), s.chars().count() as u8)],
         }
     }
 
     pub fn is_multiple(&self) -> bool {
         match self {
             RowCell::Multiple(_) => true,
-            RowCell::Single(_) => false,
+            _ => false,
         }
     }
 }

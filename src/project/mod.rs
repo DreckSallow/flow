@@ -2,6 +2,7 @@ pub mod config;
 pub mod db_model;
 mod project;
 mod test;
+use crossterm::style::Stylize;
 pub use project::Project;
 
 use self::db_model::ProjectModelUtils;
@@ -68,10 +69,21 @@ impl ProjectProgram {
         let mut table_format = table::Table::new();
         table_format.add_headers(vec!["Id", "Path"]);
         for (_, p) in projects.iter() {
-            table_format.insert_row(vec![
-                table::RowCell::Single(p.id.to_string()),
-                table::RowCell::Single(p.path.display().to_string()),
-            ]);
+            let (id_cell, path_cell) = if p.id == app_data.current_project_id {
+                let id = p.id.to_string().green().to_string();
+                let path = p.path.display().to_string().green().to_string();
+                (
+                    table::RowCell::Styled(id, p.id.to_string()),
+                    table::RowCell::Styled(path, p.path.display().to_string()),
+                )
+            } else {
+                (
+                    table::RowCell::Single(p.id.to_string()),
+                    table::RowCell::Single(p.path.display().to_string()),
+                )
+            };
+
+            table_format.insert_row(vec![id_cell, path_cell]);
         }
         println!("{}", table_format.get_table(1));
     }

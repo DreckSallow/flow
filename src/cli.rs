@@ -55,6 +55,9 @@ pub enum TaskCommands {
         /// Expand the table output adding more data
         #[arg(short, long)]
         expand: bool,
+        /// Expand the table output adding more data
+        #[arg(short, long)]
+        color: bool,
         ///Order by: "number" | "desc"
         #[arg(short, long)]
         order_by: Option<String>,
@@ -95,9 +98,11 @@ impl App {
             } => {
                 if let Some(c) = command {
                     match c {
-                        TaskCommands::List { expand, order_by } => {
-                            TaskProgram::run_list(&app_data, expand, order_by)
-                        }
+                        TaskCommands::List {
+                            expand,
+                            order_by,
+                            color,
+                        } => TaskProgram::run_list(&app_data, expand, order_by, color),
                         TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
                         TaskCommands::Start { id } => TaskProgram::run_do_task(&app_data, id),
                         TaskCommands::Stop { id } => {

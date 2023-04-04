@@ -1,6 +1,7 @@
 pub mod db_model;
 mod task;
 
+use crossterm::style::{Color, Stylize};
 pub use task::{Task, TaskStatus};
 
 use crate::{
@@ -24,7 +25,7 @@ impl TaskProgram {
             }
         }
     }
-    pub fn run_list(app_data: &AppData, expand: bool, order_by: Option<String>) {
+    pub fn run_list(app_data: &AppData, expand: bool, order_by: Option<String>, with_color: bool) {
         if let Some(mut tasks) = TaskProgram::get_tasks(app_data) {
             let mut table = Table::new();
             let tasks_len = tasks.len();
@@ -48,11 +49,45 @@ impl TaskProgram {
             }
 
             for task in tasks {
-                let id = RowCell::Single(task.temp_id.to_string());
-                let desc = RowCell::Single(task.description.clone());
-                let status = RowCell::Single(task.status.to_string());
+                let (id, desc, status) = {
+                    let color = match task.status {
+                        TaskStatus::Start => Some(Color::Green),
+                        TaskStatus::Stop => Some(Color::Blue),
+                        TaskStatus::Done => Some(Color::DarkYellow),
+                        TaskStatus::NoStarted => None,
+                    };
+
+                    if !with_color || color.is_none() {
+                        (
+                            RowCell::Single(task.temp_id.to_string()),
+                            RowCell::Single(task.description.clone()),
+                            RowCell::Single(task.status.to_string()),
+                        )
+                    } else {
+                        let v = styled_attrs(
+                            vec![
+                                &task.temp_id.to_string(),
+                                &task.description.to_string(),
+                                &task.status.to_string(),
+                            ],
+                            color.unwrap_or(Color::DarkGrey),
+                        );
+
+                        (
+                            RowCell::Styled(v[0].0.clone(), v[0].1.clone()),
+                            RowCell::Styled(v[1].0.clone(), v[1].1.clone()),
+                            RowCell::Styled(v[2].0.clone(), v[2].1.clone()),
+                        )
+                    }
+                };
+
                 let row = if expand {
-                    vec![id, desc, status, RowCell::Single(task.id.to_string())]
+                    let task_id = if task.status == TaskStatus::Start {
+                        RowCell::Styled(task.id.to_string(), task.id.to_string())
+                    } else {
+                        RowCell::Single(task.id.to_string())
+                    };
+                    vec![id, desc, status, task_id]
                 } else {
                     vec![id, desc, status]
                 };
@@ -169,4 +204,14 @@ impl TaskProgram {
             }
         }
     }
+}
+
+fn styled_attrs(texts: Vec<&str>, color: Color) -> Vec<(String, String)> {
+    let mut v = vec![];
+
+    for s in texts {
+        v.push((s.with(color).to_string(), s.to_owned()))
+    }
+
+    v
 }
