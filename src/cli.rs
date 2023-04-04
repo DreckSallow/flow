@@ -42,9 +42,9 @@ pub enum ProjectCommands {
     List,
     /// Set the current project, and get related tasks
     Switch { id: u32 },
-    /// Set the current project, and get related tasks
+    /// Remove a project by Id
     Rm { id: u32 },
-    /// Set the current project, reading the current path
+    /// Get the path and set as current project
     Use,
 }
 
@@ -61,13 +61,13 @@ pub enum TaskCommands {
     },
     /// Remove a task by 'N-Id' column
     Rm { id: u32 },
-    /// Mark tasks as In Progress, using the Ids
+    /// Mark task as In Progress, using the Ids
     Start { id: u32 },
-    /// Mark tasks as stopped, using the Ids
+    /// Mark task as stopped, using the Ids
     Stop { id: u32 },
     /// Mark tasks as completed, using the Ids
     Done { ids: Vec<u32> },
-    /// Mark tasks as completed, using the Ids
+    /// Mark tasks as Not Started, using the Ids
     Reset { ids: Vec<u32> },
 }
 
