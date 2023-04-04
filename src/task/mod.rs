@@ -82,11 +82,22 @@ impl TaskProgram {
                 };
 
                 let row = if expand {
-                    let task_id = if task.status == TaskStatus::Start {
-                        RowCell::Styled(task.id.to_string(), task.id.to_string())
-                    } else {
-                        RowCell::Single(task.id.to_string())
-                    };
+                    let mut task_id = RowCell::Single(task.id.to_string());
+                    if with_color {
+                        let color = match task.status {
+                            TaskStatus::Start => Some(Color::Green),
+                            TaskStatus::Stop => Some(Color::Blue),
+                            TaskStatus::Done => Some(Color::DarkYellow),
+                            TaskStatus::NoStarted => None,
+                        };
+
+                        if let Some(c) = color {
+                            task_id = RowCell::Styled(
+                                task.id.to_string().with(c).to_string(),
+                                task.id.to_string(),
+                            );
+                        }
+                    }
                     vec![id, desc, status, task_id]
                 } else {
                     vec![id, desc, status]
