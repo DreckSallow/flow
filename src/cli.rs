@@ -18,15 +18,17 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Project is a subcommand to manage projects locally
+    /// Manage projects locally
     Project {
+        /// Create a folder for the project
         #[arg(short, long)]
         new: bool,
+        /// Local project path
         path: Option<PathBuf>,
         #[command(subcommand)]
         command: Option<ProjectCommands>,
     },
-    /// Task is a subcommand to manage task related to the current project
+    /// Manage tasks related to the current project
     Task {
         /// Description of the task
         #[arg(short, long)]
@@ -41,9 +43,15 @@ pub enum ProjectCommands {
     /// List all projects
     List,
     /// Set the current project, and get related tasks
-    Switch { id: u32 },
+    Switch {
+        /// Project <ID>
+        id: u32,
+    },
     /// Remove a project by Id
-    Rm { id: u32 },
+    Rm {
+        ///Project <ID>
+        id: u32,
+    },
     /// Get the path and set as current project
     Use,
 }
@@ -52,26 +60,41 @@ pub enum ProjectCommands {
 pub enum TaskCommands {
     ///List all tasks related to the current project
     List {
-        /// Expand the table output adding more data
+        /// Expand the table output adding more info
         #[arg(short, long)]
         expand: bool,
-        /// Expand the table output adding more data
+        /// Add colors to table
         #[arg(short, long)]
         color: bool,
         ///Order by: "number" | "desc"
         #[arg(short, long)]
         order_by: Option<String>,
     },
-    /// Remove a task by 'N-Id' column
-    Rm { id: u32 },
-    /// Mark task as In Progress, using the Ids
-    Start { id: u32 },
-    /// Mark task as stopped, using the Ids
-    Stop { id: u32 },
-    /// Mark tasks as completed, using the Ids
-    Done { ids: Vec<u32> },
-    /// Mark tasks as Not Started, using the Ids
-    Reset { ids: Vec<u32> },
+    /// Remove a task
+    Rm {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark task as In Progress
+    Start {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark task as stopped
+    Stop {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark tasks as completed
+    Done {
+        ///Task <N-IDS>
+        ids: Vec<u32>,
+    },
+    /// Mark tasks as Not Started
+    Reset {
+        ///Task <N-IDS>
+        ids: Vec<u32>,
+    },
 }
 
 pub struct App;
