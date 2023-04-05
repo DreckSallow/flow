@@ -5,7 +5,7 @@ use std::path::PathBuf;
 use crate::{
     app_data::AppData,
     db::Db,
-    project::{ProjectParams, ProjectProgram},
+    project::{db_model::ProjectModelUtils, ProjectParams, ProjectProgram},
     task::{TaskProgram, TaskStatus},
     utils,
 };
@@ -18,15 +18,17 @@ pub struct Cli {
 
 #[derive(Subcommand, Debug)]
 pub enum Commands {
-    /// Project is a subcommand to manage projects locally
+    /// Manage projects locally
     Project {
+        /// Create a folder for the project
         #[arg(short, long)]
         new: bool,
+        /// Local project path
         path: Option<PathBuf>,
         #[command(subcommand)]
         command: Option<ProjectCommands>,
     },
-    /// Task is a subcommand to manage task related to the current project
+    /// Manage tasks related to the current project
     Task {
         /// Description of the task
         #[arg(short, long)]
@@ -40,32 +42,59 @@ pub enum Commands {
 pub enum ProjectCommands {
     /// List all projects
     List,
+    /// Set the current project, and get related tasks
     Switch {
-        path: PathBuf,
+        /// Project <ID>
+        id: u32,
     },
+    /// Remove a project by Id
+    Rm {
+        ///Project <ID>
+        id: u32,
+    },
+    /// Get the path and set as current project
+    Use,
 }
 
 #[derive(Subcommand, Debug)]
 pub enum TaskCommands {
     ///List all tasks related to the current project
     List {
-        /// Expand the table output adding more data
+        /// Expand the table output adding more info
         #[arg(short, long)]
         expand: bool,
+        /// Add colors to table
+        #[arg(short, long)]
+        color: bool,
         ///Order by: "number" | "desc"
         #[arg(short, long)]
         order_by: Option<String>,
     },
-    /// Remove a task by 'N-Id' column
-    Rm { id: u32 },
-    /// Mark tasks as In Progress, using the Ids
-    Start { id: u32 },
-    /// Mark tasks as stopped, using the Ids
-    Stop { id: u32 },
-    /// Mark tasks as completed, using the Ids
-    Done { ids: Vec<u32> },
-    /// Mark tasks as completed, using the Ids
-    Reset { ids: Vec<u32> },
+    /// Remove a task
+    Rm {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark task as In Progress
+    Start {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark task as stopped
+    Stop {
+        ///Task <N-ID>
+        id: u32,
+    },
+    /// Mark tasks as completed
+    Done {
+        ///Task <N-IDS>
+        ids: Vec<u32>,
+    },
+    /// Mark tasks as Not Started
+    Reset {
+        ///Task <N-IDS>
+        ids: Vec<u32>,
+    },
 }
 
 pub struct App;
@@ -92,9 +121,11 @@ impl App {
             } => {
                 if let Some(c) = command {
                     match c {
-                        TaskCommands::List { expand, order_by } => {
-                            TaskProgram::run_list(&app_data, expand, order_by)
-                        }
+                        TaskCommands::List {
+                            expand,
+                            order_by,
+                            color,
+                        } => TaskProgram::run_list(&app_data, expand, order_by, color),
                         TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
                         TaskCommands::Start { id } => TaskProgram::run_do_task(&app_data, id),
                         TaskCommands::Stop { id } => {
@@ -117,14 +148,19 @@ impl App {
                 if let Some(c) = command {
                     match c {
                         ProjectCommands::List => ProjectProgram::run_list(&app_data),
-                        ProjectCommands::Switch { path } => {
-                            ProjectProgram::run_switch(&app_data, path)
-                        }
+                        ProjectCommands::Switch { id } => ProjectProgram::run_switch(&app_data, id),
+                        ProjectCommands::Rm { id } => ProjectProgram::remove_project(&app_data, id),
+                        ProjectCommands::Use => ProjectProgram::run_use(&app_data),
                     }
                 } else if let Some(p) = path {
                     ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
                 } else {
-                    println!("The current project is: {}", app_data.current_project_id);
+                    match ProjectModelUtils::get_by_id(&app_data.db, app_data.current_project_id) {
+                        Ok(p) => {
+                            println!("Current Project: {}", p.path.display());
+                        }
+                        Err(_) => eprintln!("Cannot get current project :("),
+                    }
                 }
                 Ok(())
             }

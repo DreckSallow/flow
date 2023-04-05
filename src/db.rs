@@ -45,7 +45,7 @@ impl Db {
             "
             CREATE TABLE IF NOT EXISTS tasks (
               id INTEGER PRIMARY KEY,
-              description TEXT NOT NULL UNIQUE,
+              description TEXT NOT NULL,
               date TEXT NOT NULL,
               status TEXT NOT NULL CHECK(status in ('In progress','Stop','Complete','Not started')),
               project_id INTEGER NOT NULL references projects(id)
