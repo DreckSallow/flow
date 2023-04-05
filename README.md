@@ -68,6 +68,8 @@ Flow reads the path where it is called, and then set this path (if exists in the
 
 ## task
 
+To create a new task: `flow task -d <DESCRIPTION>`
+
 ### list
 
 List all tasks related to current project.
