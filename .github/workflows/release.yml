@@ -47,7 +47,7 @@ jobs:
       - name: Compress
         run: |
           cargo build --release
-          tar -zf ./flow-linux.tar.gz ./target/release/flow
+          tar -czf ./flow-linux.tar.gz ./target/release/flow
 
       - uses: actions/upload-artifact@v3
         with:
