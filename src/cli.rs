@@ -1,7 +1,10 @@
 use clap::{command, Parser, Subcommand};
-use crossterm::style::{Print, Stylize};
+use crossterm::{
+    style::{Print, Stylize},
+    tty::IsTty,
+};
 use rusqlite::Error;
-use std::path::PathBuf;
+use std::{io::stdout, path::PathBuf};
 
 use crate::{
     app_data::AppData,
@@ -180,7 +183,12 @@ impl App {
                 }
             },
             None => {
-                println!("{}", Print(FLOW_CLI_NAME.blue()));
+                print!("\n 🚀Flow - The best tool to improve your workflow and your life ✨");
+                if stdout().is_tty() {
+                    println!("{}", Print(FLOW_CLI_NAME.blue()));
+                } else {
+                    println!("{}", FLOW_CLI_NAME);
+                }
                 Ok(())
             }
         }
