@@ -2,6 +2,7 @@ use cli::App;
 
 mod app_data;
 mod cli;
+mod constants;
 mod db;
 mod project;
 mod task;
