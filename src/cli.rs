@@ -1,9 +1,11 @@
 use clap::{command, Parser, Subcommand};
+use crossterm::style::{Print, Stylize};
 use rusqlite::Error;
 use std::path::PathBuf;
 
 use crate::{
     app_data::AppData,
+    constants::FLOW_CLI_NAME,
     db::Db,
     project::{db_model::ProjectModelUtils, ProjectParams, ProjectProgram},
     task::{TaskProgram, TaskStatus},
@@ -13,7 +15,7 @@ use crate::{
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
     #[command(subcommand)]
-    command: Commands,
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand, Debug)]
@@ -115,53 +117,70 @@ impl App {
         let app_data = AppData::new(db, current_project_id);
 
         match cli.command {
-            Commands::Task {
-                description,
-                command,
-            } => {
-                if let Some(c) = command {
-                    match c {
-                        TaskCommands::List {
-                            expand,
-                            order_by,
-                            color,
-                        } => TaskProgram::run_list(&app_data, expand, order_by, color),
-                        TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
-                        TaskCommands::Start { id } => TaskProgram::run_do_task(&app_data, id),
-                        TaskCommands::Stop { id } => {
-                            TaskProgram::run_update_status(&app_data, vec![id], TaskStatus::Stop)
+            Some(command) => match command {
+                Commands::Task {
+                    description,
+                    command,
+                } => {
+                    if let Some(c) = command {
+                        match c {
+                            TaskCommands::List {
+                                expand,
+                                order_by,
+                                color,
+                            } => TaskProgram::run_list(&app_data, expand, order_by, color),
+                            TaskCommands::Rm { id } => TaskProgram::run_delete(&app_data, id),
+                            TaskCommands::Start { id } => TaskProgram::run_do_task(&app_data, id),
+                            TaskCommands::Stop { id } => TaskProgram::run_update_status(
+                                &app_data,
+                                vec![id],
+                                TaskStatus::Stop,
+                            ),
+                            TaskCommands::Done { ids } => {
+                                TaskProgram::run_update_status(&app_data, ids, TaskStatus::Done)
+                            }
+                            TaskCommands::Reset { ids } => TaskProgram::run_update_status(
+                                &app_data,
+                                ids,
+                                TaskStatus::NoStarted,
+                            ),
                         }
-                        TaskCommands::Done { ids } => {
-                            TaskProgram::run_update_status(&app_data, ids, TaskStatus::Done)
-                        }
-                        TaskCommands::Reset { ids } => {
-                            TaskProgram::run_update_status(&app_data, ids, TaskStatus::NoStarted)
-                        }
+                    } else if let Some(desc) = description {
+                        TaskProgram::run_default(&app_data, &desc);
                     }
-                } else if let Some(desc) = description {
-                    TaskProgram::run_default(&app_data, &desc);
-                }
 
-                Ok(())
-            }
-            Commands::Project { new, path, command } => {
-                if let Some(c) = command {
-                    match c {
-                        ProjectCommands::List => ProjectProgram::run_list(&app_data),
-                        ProjectCommands::Switch { id } => ProjectProgram::run_switch(&app_data, id),
-                        ProjectCommands::Rm { id } => ProjectProgram::remove_project(&app_data, id),
-                        ProjectCommands::Use => ProjectProgram::run_use(&app_data),
-                    }
-                } else if let Some(p) = path {
-                    ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
-                } else {
-                    match ProjectModelUtils::get_by_id(&app_data.db, app_data.current_project_id) {
-                        Ok(p) => {
-                            println!("Current Project: {}", p.path.display());
-                        }
-                        Err(_) => eprintln!("Cannot get current project :("),
-                    }
+                    Ok(())
                 }
+                Commands::Project { new, path, command } => {
+                    if let Some(c) = command {
+                        match c {
+                            ProjectCommands::List => ProjectProgram::run_list(&app_data),
+                            ProjectCommands::Switch { id } => {
+                                ProjectProgram::run_switch(&app_data, id)
+                            }
+                            ProjectCommands::Rm { id } => {
+                                ProjectProgram::remove_project(&app_data, id)
+                            }
+                            ProjectCommands::Use => ProjectProgram::run_use(&app_data),
+                        }
+                    } else if let Some(p) = path {
+                        ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
+                    } else {
+                        match ProjectModelUtils::get_by_id(
+                            &app_data.db,
+                            app_data.current_project_id,
+                        ) {
+                            Ok(p) => {
+                                println!("Current Project: {}", p.path.display());
+                            }
+                            Err(_) => eprintln!("Cannot get current project :("),
+                        }
+                    }
+                    Ok(())
+                }
+            },
+            None => {
+                println!("{}", Print(FLOW_CLI_NAME.blue()));
                 Ok(())
             }
         }
