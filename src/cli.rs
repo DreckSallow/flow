@@ -7,6 +7,7 @@ use rusqlite::Error;
 use std::{io::stdout, path::PathBuf};
 
 use crate::{
+    api,
     app_data::AppData,
     constants::FLOW_CLI_NAME,
     db::Db,
@@ -41,6 +42,7 @@ pub enum Commands {
         #[command(subcommand)]
         command: Option<TaskCommands>,
     },
+    Preview,
 }
 
 #[derive(Subcommand, Debug)]
@@ -179,6 +181,10 @@ impl App {
                             Err(_) => eprintln!("Cannot get current project :("),
                         }
                     }
+                    Ok(())
+                }
+                Commands::Preview => {
+                    api::run_api();
                     Ok(())
                 }
             },
