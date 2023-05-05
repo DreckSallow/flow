@@ -3,18 +3,23 @@ use crossterm::{
     style::{Print, Stylize},
     tty::IsTty,
 };
-use rusqlite::Error;
 use std::{io::stdout, path::PathBuf};
 
-use crate::{
-    api,
+use flow_api;
+
+use flow_data::{
     app_data::AppData,
-    constants::FLOW_CLI_NAME,
-    db::Db,
-    project::{db_model::ProjectModelUtils, ProjectParams, ProjectProgram},
-    task::{TaskProgram, TaskStatus},
-    utils,
+    data::current_project,
+    db::{project_model::ProjectModelUtils, Db},
+    task::TaskStatus,
+    Error,
 };
+
+use crate::constants::FLOW_CLI_NAME;
+
+use crate::project::ProjectProgram;
+use crate::task::TaskProgram;
+
 #[derive(Parser)]
 #[command(author, version, about, long_about = None)]
 pub struct Cli {
@@ -118,7 +123,7 @@ impl App {
             Ok(conn) => conn,
             Err(e) => return Err(AppError::DbConnection(e)),
         };
-        let current_project_id = utils::data::current_project();
+        let current_project_id = current_project();
         let app_data = AppData::new(db, current_project_id);
 
         match cli.command {
@@ -169,7 +174,7 @@ impl App {
                             ProjectCommands::Use => ProjectProgram::run_use(&app_data),
                         }
                     } else if let Some(p) = path {
-                        ProjectProgram::run_default(ProjectParams::new(new, p), &app_data);
+                        ProjectProgram::run_default(new, p, &app_data);
                     } else {
                         match ProjectModelUtils::get_by_id(
                             &app_data.db,
@@ -184,7 +189,7 @@ impl App {
                     Ok(())
                 }
                 Commands::Preview => {
-                    api::run_api();
+                    flow_api::run_api();
                     Ok(())
                 }
             },

@@ -1,15 +1,13 @@
-pub mod db_model;
-mod task;
-
 use crossterm::style::{Color, Stylize};
-pub use task::{Task, TaskStatus};
 
-use crate::{
-    app_data::AppData,
-    utils::table::{RowCell, Table},
+use flow_data::{
+    db::task_model::TaskModelUtils,
+    task::{Task, TaskStatus},
 };
 
-use db_model::TaskModelUtils;
+use flow_data::app_data::AppData;
+
+use crate::utils::table::{RowCell, Table};
 
 #[derive(Debug)]
 pub struct TaskProgram;
