@@ -7,7 +7,7 @@ use crate::{
     task::{Task, TaskStatus},
 };
 
-use super::Project;
+use crate::project::Project;
 
 pub struct ProjectModel<'a> {
     db: &'a Db,

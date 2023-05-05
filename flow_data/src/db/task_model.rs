@@ -3,7 +3,7 @@ use rusqlite::Result;
 
 use crate::db::Db;
 
-use super::{Task, TaskStatus};
+use crate::task::{Task, TaskStatus};
 
 pub struct TaskModelUtils;
 

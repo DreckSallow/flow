@@ -1,37 +1,29 @@
-pub mod config;
-pub mod db_model;
-mod project;
-mod test;
 use crossterm::{style::Stylize, tty::IsTty};
-pub use project::Project;
 
-use self::db_model::ProjectModelUtils;
-use crate::{
-    app_data::AppData,
-    utils::{self, table},
-};
-pub use config::ProjectParams;
+use flow_data::{app_data::AppData, data, db::project_model::ProjectModelUtils, utils};
 
-use std::{fs, io::stdout};
+use crate::utils::table;
+
+use std::{fs, io::stdout, path::Path};
 
 pub struct ProjectProgram;
 
 impl ProjectProgram {
-    pub fn run_default(params: ProjectParams, app_data: &AppData) {
+    pub fn run_default<P: AsRef<Path>>(new: bool, path: P, app_data: &AppData) {
         let path_complete = match utils::get_current_directory() {
             Err(e) => return eprintln!("{}", e.to_string()),
             Ok(mut p) => {
-                p.push(&params.path);
+                p.push(&path);
                 p
             }
         };
-        if params.new && !path_complete.exists() {
+        if new && !path_complete.exists() {
             match fs::create_dir(&path_complete) {
                 Ok(()) => println!("Folder created!: {:?}", path_complete),
                 Err(e) => eprintln!("{}", e),
             }
         }
-        if !params.new && !path_complete.exists() {
+        if !new && !path_complete.exists() {
             return eprintln!("This folder not exist locally");
         }
 
@@ -39,7 +31,7 @@ impl ProjectProgram {
             return eprintln!("This is not a folder");
         }
 
-        let path_complete = match utils::canonicalize_path(&params.path) {
+        let path_complete = match utils::canonicalize_path(&path) {
             Ok(p) => p,
             Err(e) => return eprintln!("{}", e),
         };
@@ -116,7 +108,7 @@ impl ProjectProgram {
             Err(_) => return eprintln!("The project with id: {} not exist", id),
         };
 
-        match utils::data::switch_current_project(project.id) {
+        match data::switch_current_project(project.id) {
             Ok(_) => {
                 if stdout().is_tty() {
                     println!(
@@ -150,7 +142,7 @@ impl ProjectProgram {
             }
         };
 
-        match utils::data::switch_current_project(project.id) {
+        match data::switch_current_project(project.id) {
             Ok(_) => println!(
                 "Set the path: {} as current project",
                 current_path.display()

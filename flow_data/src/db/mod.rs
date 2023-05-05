@@ -1,8 +1,11 @@
+pub mod project_model;
+pub mod task_model;
+
 use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, Error};
 
-use crate::utils::directory::Directory;
+use crate::directory::Directory;
 
 pub struct Db(pub Connection);
 
