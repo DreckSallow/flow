@@ -1,6 +1,6 @@
 use crossterm::{style::Stylize, tty::IsTty};
 
-use flow_data::{app_data::AppData, data, db::project_model::ProjectModelUtils, utils};
+use flow_data::{app_data::AppData, data, db::project::project_utils, utils};
 
 use crate::utils::table;
 
@@ -36,7 +36,7 @@ impl ProjectProgram {
             Err(e) => return eprintln!("{}", e),
         };
 
-        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
+        let projects = match project_utils::get_projects(&app_data.db) {
             Ok(projects) => projects,
             Err(e) => return eprintln!("Error getting the Projects: {}", e),
         };
@@ -48,13 +48,13 @@ impl ProjectProgram {
             );
         }
 
-        if let Err(e) = ProjectModelUtils::create_project(&app_data.db, &path_complete) {
+        if let Err(e) = project_utils::create_project(&app_data.db, path_complete) {
             return eprintln!("{:?}", e);
         }
     }
 
     pub fn run_list(app_data: &AppData) {
-        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
+        let projects = match project_utils::get_projects(&app_data.db) {
             Ok(projects) => projects,
             Err(e) => return eprintln!("Error getting the Projects: {}", e),
         };
@@ -80,7 +80,7 @@ impl ProjectProgram {
         println!("{}", table_format.get_table(1));
     }
     pub fn remove_project(app_data: &AppData, id: u32) {
-        let project_finded = match ProjectModelUtils::get_projects(&app_data.db) {
+        let project_finded = match project_utils::get_projects(&app_data.db) {
             Ok(p) => p.into_values().find(|p| p.id == id),
             Err(_) => return eprintln!("Error tryng to get the projects"),
         };
@@ -93,7 +93,7 @@ impl ProjectProgram {
             return eprintln!("Cannot delete the main project.");
         }
 
-        match ProjectModelUtils::remove_project(&app_data.db, id) {
+        match project_utils::remove_project(&app_data.db, id) {
             Ok(_) => println!(
                 "Deleted Project: {}",
                 project_finded.unwrap().path.display()
@@ -103,7 +103,7 @@ impl ProjectProgram {
     }
 
     pub fn run_switch(app_data: &AppData, id: u32) {
-        let project = match ProjectModelUtils::get_by_id(&app_data.db, id) {
+        let project = match project_utils::get_by_id(&app_data.db, id) {
             Ok(p) => p,
             Err(_) => return eprintln!("The project with id: {} not exist", id),
         };
@@ -127,7 +127,7 @@ impl ProjectProgram {
     pub fn run_use(app_data: &AppData) {
         let current_path = utils::get_current_directory().unwrap();
 
-        let projects = match ProjectModelUtils::get_projects(&app_data.db) {
+        let projects = match project_utils::get_projects(&app_data.db) {
             Ok(list) => list,
             Err(_) => return eprintln!("Error getting the projects"),
         };

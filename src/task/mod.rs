@@ -1,7 +1,7 @@
 use crossterm::style::{Color, Stylize};
 
 use flow_data::{
-    db::task_model::TaskModelUtils,
+    db::task::task_utils,
     task::{Task, TaskStatus},
 };
 
@@ -14,7 +14,7 @@ pub struct TaskProgram;
 
 impl TaskProgram {
     pub fn run_default(app_data: &AppData, desc: &str) {
-        match TaskModelUtils::create_task(&app_data.db, desc, app_data.current_project_id) {
+        match task_utils::create_task(&app_data.db, desc, app_data.current_project_id) {
             Ok(_) => {
                 println!("Task '{}' created!", desc);
             }
@@ -124,7 +124,7 @@ impl TaskProgram {
             });
 
             match task_id {
-                Some(id) => match TaskModelUtils::remove_task(&app_data.db, id) {
+                Some(id) => match task_utils::remove_task(&app_data.db, id) {
                     Ok(_) => {
                         println!("Task '{}' deleted", task_temp_id);
                     }
@@ -157,7 +157,7 @@ impl TaskProgram {
 
                 let errors: Vec<_> = task_ids
                     .iter()
-                    .map(|id| TaskModelUtils::update_task_status(&app_data.db, *id, &status))
+                    .map(|id| task_utils::update_task_status(&app_data.db, *id, &status))
                     .filter_map(|r| r.err())
                     .collect();
 
@@ -195,7 +195,7 @@ impl TaskProgram {
                 );
             }
             let task = find_task.unwrap();
-            match TaskModelUtils::update_task_status(&app_data.db, task.id, &TaskStatus::Start) {
+            match task_utils::update_task_status(&app_data.db, task.id, &TaskStatus::Start) {
                 Ok(_) => {
                     println!("Task updated!")
                 }
@@ -205,7 +205,7 @@ impl TaskProgram {
     }
 
     fn get_tasks(app_data: &AppData) -> Option<Vec<Task>> {
-        match TaskModelUtils::get_tasks(&app_data.db, app_data.current_project_id) {
+        match task_utils::get_tasks_by_project(&app_data.db, app_data.current_project_id) {
             Ok(tasks) => Some(tasks),
             Err(e) => {
                 eprintln!("Error getting the tasks: {}", e);

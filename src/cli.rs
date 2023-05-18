@@ -10,7 +10,7 @@ use flow_api;
 use flow_data::{
     app_data::AppData,
     data::current_project,
-    db::{project_model::ProjectModelUtils, Db},
+    db::{project::project_utils, Db},
     task::TaskStatus,
     Error,
 };
@@ -176,10 +176,7 @@ impl App {
                     } else if let Some(p) = path {
                         ProjectProgram::run_default(new, p, &app_data);
                     } else {
-                        match ProjectModelUtils::get_by_id(
-                            &app_data.db,
-                            app_data.current_project_id,
-                        ) {
+                        match project_utils::get_by_id(&app_data.db, app_data.current_project_id) {
                             Ok(p) => {
                                 println!("Current Project: {}", p.path.display());
                             }

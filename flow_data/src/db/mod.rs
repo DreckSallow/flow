@@ -1,5 +1,7 @@
-pub mod project_model;
-pub mod task_model;
+pub mod project;
+mod queries;
+pub mod task;
+pub mod tests;
 
 use std::path::{Path, PathBuf};
 
