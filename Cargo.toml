@@ -24,5 +24,5 @@ crossterm = "0.26.0"
 flow_api = { path = "./flow_api" }
 flow_data = { path = "./flow_data" }
 
-# [workspace]
-# members = ["flow_api", "flow_data"]
+[workspace]
+members = ["flow_api", "flow_data"]
