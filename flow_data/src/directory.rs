@@ -2,7 +2,7 @@ use std::{fs, path::PathBuf};
 
 use directories::ProjectDirs;
 
-use super::get_current_exe;
+use crate::utils::get_current_exe;
 
 pub struct Directory;
 

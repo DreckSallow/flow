@@ -1,8 +1,13 @@
+pub mod project;
+mod queries;
+pub mod task;
+pub mod tests;
+
 use std::path::{Path, PathBuf};
 
 use rusqlite::{Connection, Error};
 
-use crate::utils::directory::Directory;
+use crate::directory::Directory;
 
 pub struct Db(pub Connection);
 
@@ -48,7 +53,7 @@ impl Db {
               description TEXT NOT NULL,
               date TEXT NOT NULL,
               status TEXT NOT NULL CHECK(status in ('In progress','Stop','Complete','Not started')),
-              project_id INTEGER NOT NULL references projects(id)
+              project_id INTEGER NOT NULL references projects(id) ON DELETE CASCADE
             )
           ",
             (),

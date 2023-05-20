@@ -3,7 +3,7 @@ name = "flow-cli"
 version = "0.1.1"
 edition = "2021"
 authors = ["Dreck Sallow <arandadikson@gmail.com>"]
-license= "MIT"
+license = "MIT"
 description = "Flow is a useful cli tool to better manage tasks and projects"
 readme = "README.md"
 repository = "https://github.com/DreckSallow/flow"
@@ -12,14 +12,19 @@ categories = ["command-line-utilities"]
 
 [[bin]]
 name = "flow"
-path = "src/main.rs"
+path = "./src/main.rs"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.71"
 clap = { version = "4.1.4", features = ["derive"] }
 clap_complete = "4.1.2"
 crossterm = "0.26.0"
-rusqlite = { version = "0.28.0", features = ["bundled"] }
-chrono = "0.4.24"
-directories = "5.0"
+thiserror = "1.0"
+
+flow_api = { path = "./flow_api" }
+flow_data = { path = "./flow_data" }
+
+[workspace]
+members = ["flow_api", "flow_data"]

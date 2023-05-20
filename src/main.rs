@@ -1,10 +1,9 @@
 use cli::App;
 
-mod app_data;
 mod cli;
-mod db;
-mod project;
-mod task;
+mod constants;
+mod project_cmd;
+mod task_cmd;
 mod utils;
 
 fn main() {

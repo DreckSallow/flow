@@ -1,6 +1,6 @@
 use std::{fs, path::PathBuf};
 
-use super::directory::Directory;
+use crate::directory::Directory;
 
 pub fn current_project_path() -> PathBuf {
     let mut path_current_project = Directory::local_data_dir();
