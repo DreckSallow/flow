@@ -17,9 +17,11 @@ path = "./src/main.rs"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+anyhow = "1.0.71"
 clap = { version = "4.1.4", features = ["derive"] }
 clap_complete = "4.1.2"
 crossterm = "0.26.0"
+thiserror = "1.0"
 
 flow_api = { path = "./flow_api" }
 flow_data = { path = "./flow_data" }

@@ -2,8 +2,8 @@ use cli::App;
 
 mod cli;
 mod constants;
-mod project;
-mod task;
+mod project_cmd;
+mod task_cmd;
 mod utils;
 
 fn main() {

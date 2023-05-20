@@ -53,7 +53,7 @@ impl Db {
               description TEXT NOT NULL,
               date TEXT NOT NULL,
               status TEXT NOT NULL CHECK(status in ('In progress','Stop','Complete','Not started')),
-              project_id INTEGER NOT NULL references projects(id)
+              project_id INTEGER NOT NULL references projects(id) ON DELETE CASCADE
             )
           ",
             (),

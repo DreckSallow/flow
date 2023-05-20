@@ -64,11 +64,11 @@ mod tests {
         }
 
         let projects = project_utils::get_projects(&db).expect("Error getting all projects");
-
         assert_eq!(projects.len(), project_ids as usize);
 
         for i in 1..project_ids {
             let res = project_utils::remove_project(&db, i);
+            println!("res: {:?}", res);
             assert!(res.is_ok())
         }
 
