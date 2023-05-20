@@ -93,6 +93,11 @@ pub fn remove_project(app_data: &AppData, id: u32) -> Result<()> {
 pub fn swicth_current_project(app_data: &AppData, id: u32) -> Result<()> {
     let project = project_utils::get_by_id(&app_data.db, id)?;
 
+    if !project.path.exists() {
+        //TODO: remove the folder that not exist locally!
+        return Err(anyhow!("The path not exist locally! {:?}", project.path));
+    }
+
     data::switch_current_project(id)?;
     if stdout().is_tty() {
         println!(
