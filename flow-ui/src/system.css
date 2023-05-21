@@ -1,0 +1,17 @@
+body,
+#app {
+  min-height: 100vh;
+  min-width: 100vw;
+}
+
+.light-theme {
+  --bg-color: rgb(173, 181, 194);
+}
+
+.dark-theme {
+  --bg-color: rgb(58, 65, 79);
+}
+
+.my-bg {
+  background-color: var(--bg-color);
+}
