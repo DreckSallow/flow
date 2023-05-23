@@ -1,37 +1,72 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import Card from "./components/card.svelte";
   import SystemUi from "./system-ui.svelte";
-  import Switch from "./components/switch.svelte";
-  import { SunIcon, MoonIcon } from "./components/icons";
+  import Nav from "./ui/nav.svelte";
+  import { Doughnut } from "./components/charts";
 </script>
 
 <SystemUi>
-  <nav
-    class="flex flex-row items-center justify-between py-2 px-3 bg-soft rounded-lg"
-  >
-    <div class="nav-logo">
-      <img src="/images/flow-logo.png" alt="Flow Logo" />
+  <Nav />
+  <section class="main-info flex flexcol mt-4">
+    <div class="w-2/5 h-full">
+      <Card title="Projects">
+        <Doughnut />
+      </Card>
     </div>
-    <ul class="flex flex-row items-center">
-      <Switch checked let:checked>
-        {#if checked}
-          <MoonIcon class="fill-zinc-600 w-10/12" />
-        {:else}
-          <SunIcon class="fill-zinc-600 w-10/12" />
-        {/if}
-      </Switch>
-    </ul>
-  </nav>
+    <div class="info-cards w-3/5 flex flex-row flex-wrap">
+      <Card
+        title="Task Total"
+        className="aspect-square"
+        sectionStyle="h-full flex items-center justify-center"
+      >
+        <h2 class="font-bold text-4xl">4</h2>
+      </Card>
+      <Card
+        title="Todo"
+        className="aspect-square"
+        sectionStyle="h-full flex items-center justify-center"
+      >
+        <h2 class="font-bold text-4xl">4</h2>
+      </Card>
+      <Card
+        title="In Progress"
+        className="aspect-square"
+        sectionStyle="h-full flex items-center justify-center"
+      >
+        <h2 class="font-bold text-4xl">4</h2>
+      </Card>
+      <Card
+        title="Done"
+        className="aspect-square"
+        sectionStyle="h-full flex items-center justify-center"
+      >
+        <h2 class="font-bold text-4xl">4</h2>
+      </Card>
+    </div>
+  </section>
 </SystemUi>
 
 <style>
-  .nav-logo {
-    width: 70px;
+  .main-info {
+    gap: 1rem;
+    max-height: 370px;
+    overflow: hidden;
   }
 
-  nav {
-    border: 1px solid white;
-    min-height: 70px;
-    width: 100%;
+  .main-info > div:first-child :global(> div) {
+    height: 100%;
+  }
+
+  .main-info > div {
+    height: inherit;
+  }
+
+  .info-cards {
+    gap: 1rem;
+  }
+
+  .info-cards :global(> *) {
+    width: calc(50% - 0.5rem);
+    height: calc(50% - 0.5rem);
   }
 </style>
