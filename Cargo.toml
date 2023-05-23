@@ -28,3 +28,7 @@ flow_data = { path = "./flow_data" }
 
 [workspace]
 members = ["flow_api", "flow_data"]
+
+[workspace.dependencies]
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
