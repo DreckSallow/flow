@@ -1,4 +1,6 @@
-#[derive(Debug)]
+use serde::Serialize;
+
+#[derive(Debug, Serialize)]
 pub struct Task {
     pub id: u32,
     pub temp_id: u32,
@@ -17,7 +19,7 @@ impl Task {
     }
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Serialize)]
 pub enum TaskStatus {
     Start,
     Stop,
