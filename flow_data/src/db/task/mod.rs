@@ -1,3 +1,5 @@
+use std::sync::{Arc, Mutex};
+
 use rusqlite::Result;
 
 use crate::task::{Task, TaskStatus};
@@ -32,28 +34,31 @@ impl<'a> TaskModel<'a> {
     }
 }
 
-pub struct TaskModelAsync<'a> {
-    db: &'a Db,
+#[derive(Clone)]
+pub struct TaskModelAsync {
+    db: Arc<Mutex<Db>>,
 }
 
-impl<'a> TaskModelAsync<'a> {
-    pub fn new(db: &'a Db) -> Self {
-        Self { db }
+impl TaskModelAsync {
+    pub fn new(db: &Arc<Mutex<Db>>) -> Self {
+        Self {
+            db: Arc::clone(&db),
+        }
     }
 
     pub async fn create(&self, desc: &str, project_id: u32) -> Result<u32> {
-        task_utils::create_task(self.db, desc, project_id)
+        task_utils::create_task(&self.db.lock().unwrap(), desc, project_id)
     }
 
     pub async fn find_by_project(&self, project_id: u32) -> Result<Vec<Task>> {
-        task_utils::get_tasks_by_project(self.db, project_id)
+        task_utils::get_tasks_by_project(&self.db.lock().unwrap(), project_id)
     }
 
     pub async fn delete_by_id(&self, id: u32) -> Result<()> {
-        task_utils::remove_task(self.db, id)
+        task_utils::remove_task(&self.db.lock().unwrap(), id)
     }
 
     pub async fn update_status(&self, id: u32, status: TaskStatus) -> Result<()> {
-        task_utils::update_task_status(self.db, id, &status)
+        task_utils::update_task_status(&self.db.lock().unwrap(), id, &status)
     }
 }
