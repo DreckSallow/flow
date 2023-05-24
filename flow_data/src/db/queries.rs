@@ -33,6 +33,10 @@ pub mod task_query {
     /// `Project ID`
     pub const TASKS_BY_PROJECT: &str = "SELECT * FROM tasks WHERE project_id = ? ORDER BY id ASC";
 
+    /// #### Query Return
+    /// `Task ID` | `Task Desc` | `Task Date` | `Task Status`
+    pub const ALL_TASKS: &str = "SELECT * FROM tasks ORDER BY id ASC";
+
     /// #### ARGS
     /// `Task Status` |`Task ID`
     pub const UPDATE_STATUS: &str = "UPDATE tasks SET status = ?1 WHERE id = ?2 ";
