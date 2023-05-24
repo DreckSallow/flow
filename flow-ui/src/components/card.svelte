@@ -7,20 +7,14 @@
 </script>
 
 <div
-  class="flex flex-col justify-between card bg-soft p-4 rounded-lg {className}"
+  class="flex flex-col justify-between card bg-soft p-4 rounded-lg card-shadow {className}"
 >
-  <header class="flex flex-row {headerStyle}">
+  <header class="flex flex-row {headerStyle} text-strong">
     <h3 class="font-semibold text-lg">{title}</h3>
   </header>
-  <section class="flex justify-center {sectionStyle}">
+  <section
+    class="flex justify-center items-center min-w-0 w-full h-full {sectionStyle}"
+  >
     <slot />
   </section>
 </div>
-
-<style>
-  div {
-    display: grid !important;
-    grid-template-rows: 8% 92%;
-    grid-template-columns: 1fr;
-  }
-</style>
