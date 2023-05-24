@@ -6,7 +6,9 @@
   export let sectionStyle = "";
 </script>
 
-<div class="flex flex-col justify-between card bg-soft p-4 {className}">
+<div
+  class="flex flex-col justify-between card bg-soft p-4 rounded-lg {className}"
+>
   <header class="flex flex-row {headerStyle}">
     <h3 class="font-semibold text-lg">{title}</h3>
   </header>
