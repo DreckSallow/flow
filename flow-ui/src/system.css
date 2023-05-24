@@ -4,11 +4,22 @@ body,
   min-width: 100vw;
 }
 
+.card-shadow {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .bg-strong {
   background-color: hsla(var(--bg-strong), var(--alpha));
 }
 
 .bg-soft {
   background-color: hsla(var(--bg-soft), var(--alpha));
-  /* background-color: white; */
+}
+
+.text-strong {
+  color: hsla(var(--text-strong), var(--alpha));
+}
+
+.text-soft {
+  color: hsla(var(--text-soft), var(--alpha));
 }
