@@ -14,7 +14,7 @@ use crate::AppModels;
 async fn get_all_projects(State(app): State<Arc<AppModels>>) -> impl IntoResponse {
     let projects_res = app.project.find_all().await;
     match projects_res {
-        Ok(p) => (StatusCode::ACCEPTED, Json(json!({ "data":p,"message":""}))),
+        Ok(p) => (StatusCode::OK, Json(json!({ "data":p,"message":""}))),
         Err(e) => {
             println!("ERROR: {}", e);
             (
@@ -40,7 +40,7 @@ async fn get_tasks_by_project(
             };
 
             (
-                StatusCode::ACCEPTED,
+                StatusCode::OK,
                 Json(json!({ "data":tasks,"message":message})),
             )
         }
@@ -67,7 +67,7 @@ async fn get_all_tasks(State(app): State<Arc<AppModels>>) -> impl IntoResponse {
             };
 
             (
-                StatusCode::ACCEPTED,
+                StatusCode::OK,
                 Json(json!({ "data":tasks,"message":message})),
             )
         }
