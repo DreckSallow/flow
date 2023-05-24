@@ -6,6 +6,7 @@
   } from "chart.js/auto";
   export let datasets: ChartDataset<"doughnut">[] = [];
   export let options: Partial<CoreChartOptions<"doughnut">>;
+  export let labels: string[] = [];
 
   let ctxCanvas: HTMLCanvasElement | null;
 
@@ -18,6 +19,7 @@
     new Chart(ctx, {
       type: "doughnut",
       data: {
+        labels,
         datasets,
       },
       options,
