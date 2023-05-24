@@ -1,12 +1,12 @@
 import type { Project, Task } from "../lib/types";
 
 export class ProjectService {
-  private endpoint = "/api/projects";
+  private endpoint = `${import.meta.env.VITE_API_URL}/api/projects`;
 
   async get_all(): Promise<Array<Project>> {
     const res = await fetch(this.endpoint);
-    const dataRes = (await res.json()) as Array<any>;
-    return dataRes.reduce<Array<Project>>((acc, { id, path, tasks }) => {
+    const dataRes = (await res.json()) as { data: any[]; message: string };
+    return dataRes.data.reduce<Array<Project>>((acc, { id, path, tasks }) => {
       const cleanTasks = tasks.reduce(
         (acc: Array<Task>, { temp_id, ...all }) => {
           return acc.concat({
@@ -21,6 +21,7 @@ export class ProjectService {
         id,
         path,
         tasks: cleanTasks,
+        name: path.split("\\").pop(),
       });
     }, []);
   }
