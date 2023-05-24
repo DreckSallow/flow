@@ -1,8 +1,10 @@
 use std::path::PathBuf;
 
+use serde::Serialize;
+
 use crate::task::Task;
 
-#[derive(Debug)]
+#[derive(Debug, Serialize)]
 pub struct Project {
     pub id: u32,
     pub path: PathBuf,
