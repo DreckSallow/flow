@@ -55,9 +55,37 @@ async fn get_tasks_by_project(
     }
 }
 
+async fn get_all_tasks(State(app): State<Arc<AppModels>>) -> impl IntoResponse {
+    let tasks_res = app.task.find_all().await;
+
+    match tasks_res {
+        Ok(tasks) => {
+            let message = if tasks.is_empty() {
+                "No have tasks"
+            } else {
+                ""
+            };
+
+            (
+                StatusCode::ACCEPTED,
+                Json(json!({ "data":tasks,"message":message})),
+            )
+        }
+        Err(e) => {
+            println!("ERROR: {}", e);
+
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({ "data":None::<bool>,"message":e.to_string()})),
+            )
+        }
+    }
+}
+
 pub fn routes(state: Arc<AppModels>) -> Router {
     Router::new()
         .route("/projects", get(get_all_projects))
+        .route("/tasks", get(get_all_tasks))
         .route("/tasks/:project_id", get(get_tasks_by_project))
         .with_state(state)
 }

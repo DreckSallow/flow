@@ -54,6 +54,10 @@ impl TaskModelAsync {
         task_utils::get_tasks_by_project(&self.db.lock().unwrap(), project_id)
     }
 
+    pub async fn find_all(&self) -> Result<Vec<Task>> {
+        task_utils::get_all_tasks(&self.db.lock().unwrap())
+    }
+
     pub async fn delete_by_id(&self, id: u32) -> Result<()> {
         task_utils::remove_task(&self.db.lock().unwrap(), id)
     }
