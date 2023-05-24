@@ -1,6 +1,11 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Chart from "chart.js/auto";
+  import Chart, {
+    type ChartDataset,
+    type CoreChartOptions,
+  } from "chart.js/auto";
+  export let datasets: ChartDataset<"doughnut">[] = [];
+  export let options: Partial<CoreChartOptions<"doughnut">>;
 
   let ctxCanvas: HTMLCanvasElement | null;
 
@@ -13,20 +18,9 @@
     new Chart(ctx, {
       type: "doughnut",
       data: {
-        datasets: [
-          {
-            // label: "My First Dataset",
-            data: [300, 50, 100],
-            backgroundColor: ["#7000e1", "#fc8800", "#00b0e8"],
-            // hoverOffset: 4,
-            borderWidth: 0,
-          },
-        ],
+        datasets,
       },
-      options: {
-        responsive: true,
-        spacing: 0,
-      },
+      options,
     });
   });
 </script>
