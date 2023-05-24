@@ -6,5 +6,8 @@
 
 <SystemUi>
   <Nav />
-  <Analysis />
+  <section>
+    <h2 class="text-xl font-semibold">Analytics Overview</h2>
+    <Analysis />
+  </section>
 </SystemUi>

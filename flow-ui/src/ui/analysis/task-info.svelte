@@ -40,7 +40,7 @@
     {#await taskInfo}
       <p>Loading...</p>
     {:then { Total }}
-      <h2 class="font-bold text-4xl">{Total}</h2>
+      <h2 class="font-bold text-4xl text-soft">{Total}</h2>
     {:catch}
       <p>Error</p>
     {/await}
@@ -53,7 +53,7 @@
     {#await taskInfo}
       <p>Loading...</p>
     {:then { NoStarted }}
-      <h2 class="font-bold text-4xl">{NoStarted}</h2>
+      <h2 class="font-bold text-4xl text-soft">{NoStarted}</h2>
     {:catch}
       <p>Error</p>
     {/await}
@@ -66,7 +66,7 @@
     {#await taskInfo}
       <p>Loading...</p>
     {:then { InProgress }}
-      <h2 class="font-bold text-4xl">{InProgress}</h2>
+      <h2 class="font-bold text-4xl text-soft">{InProgress}</h2>
     {:catch}
       <p>Error</p>
     {/await}
@@ -79,7 +79,7 @@
     {#await taskInfo}
       <p>Loading...</p>
     {:then { Complete }}
-      <h2 class="font-bold text-4xl">{Complete}</h2>
+      <h2 class="font-bold text-4xl text-soft">{Complete}</h2>
     {:catch e}
       <p>Error {e}</p>
     {/await}

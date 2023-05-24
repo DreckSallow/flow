@@ -26,7 +26,7 @@
   }
 </script>
 
-<section class="main-info flex flexcol mt-4">
+<section class="main-info flex mt-4 flex-row">
   <div class="w-2/5 h-full">
     <Card title="Projects">
       {#await chartData}
@@ -44,9 +44,18 @@
 <style>
   .main-info {
     gap: 1rem;
+    /* max-height: auto; */
     max-height: 370px;
+
+    padding-bottom: 1em;
     overflow: hidden;
   }
+
+  /* @media (min-width: 640px) {
+    .main-info {
+      max-height: 370px;
+    }
+  } */
 
   .main-info > div:first-child :global(> div) {
     height: 100%;
