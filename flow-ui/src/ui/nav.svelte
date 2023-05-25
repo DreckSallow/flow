@@ -1,7 +1,7 @@
 <script>
   import { MoonIcon, SunIcon } from "../components/icons";
-
   import Switch from "../components/switch.svelte";
+  import { themeStore, updateTheme } from "../lib/store/theme";
 </script>
 
 <nav
@@ -11,11 +11,18 @@
     <img src="/images/flow-logo.png" alt="Flow Logo" />
   </div>
   <ul class="flex flex-row items-center">
-    <Switch checked let:checked>
+    <Switch
+      checked={$themeStore == "dark"}
+      let:checked
+      click={(s) => {
+        updateTheme($themeStore == "light" ? "dark" : "light");
+        return !s;
+      }}
+    >
       {#if checked}
-        <MoonIcon class="fill-zinc-600 w-10/12" />
+        <MoonIcon class="fill-strong w-10/12" />
       {:else}
-        <SunIcon class="fill-zinc-600 w-10/12" />
+        <SunIcon class="fill-strong w-10/12" />
       {/if}
     </Switch>
   </ul>
@@ -27,7 +34,6 @@
   }
 
   nav {
-    border: 1px solid white;
     min-height: 70px;
     width: 100%;
   }

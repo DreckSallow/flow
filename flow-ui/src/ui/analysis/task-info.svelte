@@ -38,7 +38,7 @@
     sectionStyle="h-full flex items-center justify-center"
   >
     {#await taskInfo}
-      <p>Loading...</p>
+      <p class="text-soft">Loading...</p>
     {:then { Total }}
       <h2 class="font-bold text-4xl text-soft">{Total}</h2>
     {:catch}
@@ -51,7 +51,7 @@
     sectionStyle="h-full flex items-center justify-center"
   >
     {#await taskInfo}
-      <p>Loading...</p>
+      <p class="text-soft">Loading...</p>
     {:then { NoStarted }}
       <h2 class="font-bold text-4xl text-soft">{NoStarted}</h2>
     {:catch}
@@ -64,7 +64,7 @@
     sectionStyle="h-full flex items-center justify-center"
   >
     {#await taskInfo}
-      <p>Loading...</p>
+      <p class="text-soft">Loading...</p>
     {:then { InProgress }}
       <h2 class="font-bold text-4xl text-soft">{InProgress}</h2>
     {:catch}
@@ -77,7 +77,7 @@
     sectionStyle="h-full flex items-center justify-center"
   >
     {#await taskInfo}
-      <p>Loading...</p>
+      <p class="text-soft">Loading...</p>
     {:then { Complete }}
       <h2 class="font-bold text-4xl text-soft">{Complete}</h2>
     {:catch e}

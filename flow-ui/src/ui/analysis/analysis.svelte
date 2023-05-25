@@ -30,7 +30,7 @@
   <div class="w-2/5 h-full">
     <Card title="Projects">
       {#await chartData}
-        <p>loading...</p>
+        <p class="text-strong">loading...</p>
       {:then data}
         <Doughnut datasets={data.dataset} options={{}} labels={data.labels} />
       {:catch e}

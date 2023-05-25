@@ -1,12 +1,15 @@
 <script lang="ts">
   export let checked = false;
+  export let click: (st: boolean) => boolean = (s) => !s;
 </script>
 
 <button
   class="switch-button rounded-full border relative h-8 w-14 bg-strong overflow-hidden"
   role="switch"
   aria-checked={checked}
-  on:click={() => (checked = !checked)}
+  on:click={() => {
+    checked = click(checked);
+  }}
 >
   <span
     class="rounded-full absolute w-1/2 h-full overflow-hidden bg-soft flex items-center justify-center"

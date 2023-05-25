@@ -23,3 +23,11 @@ body,
 .text-soft {
   color: hsla(var(--text-soft), var(--alpha));
 }
+
+.fill-strong {
+  fill: hsla(var(--text-strong), var(--alpha));
+}
+
+.fill-soft {
+  fill: hsla(var(--text-soft), var(--alpha));
+}

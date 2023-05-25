@@ -13,8 +13,9 @@
   }
 
   :global(.dark-theme) {
-    --text-strong: 215°, 5%, 18%;
-    --bg-back: 253, 5%, 26%;
-    --bg-soft: 217, 20%, 98%;
+    --text-strong: 0, 0%, 100%;
+    --text-soft: 246, 36%, 71%;
+    --bg-strong: 232, 34%, 17%;
+    --bg-soft: 231, 32%, 22%;
   }
 </style>
