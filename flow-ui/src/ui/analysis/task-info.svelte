@@ -52,8 +52,8 @@
   >
     {#await taskInfo}
       <p class="text-soft">Loading...</p>
-    {:then { NoStarted }}
-      <h2 class="font-bold text-4xl text-soft">{NoStarted}</h2>
+    {:then t}
+      <h2 class="font-bold text-4xl text-soft">{t["Not started"]}</h2>
     {:catch}
       <p>Error</p>
     {/await}
@@ -65,8 +65,8 @@
   >
     {#await taskInfo}
       <p class="text-soft">Loading...</p>
-    {:then { InProgress }}
-      <h2 class="font-bold text-4xl text-soft">{InProgress}</h2>
+    {:then t}
+      <h2 class="font-bold text-4xl text-soft">{t["In progress"]}</h2>
     {:catch}
       <p>Error</p>
     {/await}

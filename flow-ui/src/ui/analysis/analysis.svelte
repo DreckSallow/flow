@@ -1,41 +1,31 @@
 <script lang="ts">
-  import type { ChartDataset } from "chart.js";
   import Card from "../../components/card.svelte";
   import { Doughnut } from "../../components/charts";
-  import { projectService } from "../../services";
   import TaskInfo from "./task-info.svelte";
+  import type { Project } from "../../lib/types";
 
-  type DataChart = {
-    dataset: ChartDataset<"doughnut">[];
-    labels?: string[];
+  export let projects: Project[];
+
+  $: chartData = {
+    dataset: [
+      {
+        label: "Tasks",
+        data: projects.map(({ tasks }) => tasks.length),
+      },
+    ],
+    labels: projects.map(({ name }) => name),
   };
-
-  let chartData: Promise<DataChart> = projectsData();
-
-  async function projectsData(): Promise<DataChart> {
-    const projects = await projectService.get_all();
-    return {
-      dataset: [
-        {
-          label: "Tasks",
-          data: projects.map(({ tasks }) => tasks.length),
-        },
-      ],
-      labels: projects.map(({ name }) => name),
-    };
-  }
+  $: console.log(chartData);
 </script>
 
 <section class="main-info flex mt-4 flex-row">
   <div class="w-2/5 h-full">
-    <Card title="Projects">
-      {#await chartData}
-        <p class="text-strong">loading...</p>
-      {:then data}
-        <Doughnut datasets={data.dataset} options={{}} labels={data.labels} />
-      {:catch e}
-        <p class="text-red-400">Error getting the data</p>
-      {/await}
+    <Card title="Tasks overview">
+      <Doughnut
+        datasets={chartData.dataset}
+        options={{}}
+        labels={chartData.labels}
+      />
     </Card>
   </div>
   <TaskInfo />
@@ -44,18 +34,10 @@
 <style>
   .main-info {
     gap: 1rem;
-    /* max-height: auto; */
     max-height: 370px;
-
     padding-bottom: 1em;
     overflow: hidden;
   }
-
-  /* @media (min-width: 640px) {
-    .main-info {
-      max-height: 370px;
-    }
-  } */
 
   .main-info > div:first-child :global(> div) {
     height: 100%;

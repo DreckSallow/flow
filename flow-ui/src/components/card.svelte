@@ -21,9 +21,9 @@
 
 <style>
   header {
-    height: 10%;
+    min-height: 30px;
   }
   section {
-    height: 90%;
+    height: calc(100% - 30px);
   }
 </style>

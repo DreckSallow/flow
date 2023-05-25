@@ -1,6 +1,6 @@
 export const enum TaskStatus {
-  NotStarted = "NoStarted",
-  InProgress = "InProgress",
+  NotStarted = "Not started",
+  InProgress = "In progress",
   Stop = "Stop",
   Done = "Complete",
 }
