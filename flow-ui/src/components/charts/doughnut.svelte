@@ -22,7 +22,14 @@
         labels,
         datasets,
       },
-      options,
+      options: {
+        elements: {
+          arc: {
+            borderWidth: 0,
+          },
+        },
+        ...options,
+      },
     });
   });
 </script>
