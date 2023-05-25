@@ -18,3 +18,12 @@
     <slot />
   </section>
 </div>
+
+<style>
+  header {
+    height: 10%;
+  }
+  section {
+    height: 90%;
+  }
+</style>
