@@ -15,7 +15,6 @@
     ],
     labels: projects.map(({ name }) => name),
   };
-  $: console.log(chartData);
 </script>
 
 <section class="main-info flex mt-4 flex-row">

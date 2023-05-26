@@ -13,7 +13,6 @@
   };
 
   function getProjectData(project: Project) {
-    console.log(project.tasks);
     const grouped: { [key in keyof typeof statusColors] } = {
       todo: project.tasks.filter(
         ({ status }) => status === TaskStatus.NotStarted
@@ -29,7 +28,7 @@
     return Object.entries(grouped).map(([k, count]) => {
       return {
         color: statusColors[k],
-        label: "DONE",
+        label: k,
         data: count,
       };
     });
@@ -45,8 +44,12 @@
     >
       <!-- <h4 class="font-medium text-soft text-sm mt-4">{project.path}</h4> -->
       <Percentage
+        emptyLabel="No have tasks"
         dataPercentage={getProjectData(project)}
-        class="w-4/5 bg-strong"
+        class="w-4/5 bg-strong cursor-pointer"
+        on:click={() => {
+          alert("Open the tasks table :)");
+        }}
       />
     </Card>
   {/each}

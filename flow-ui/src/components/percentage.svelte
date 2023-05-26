@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { displayTooltip } from "../lib/store/tooltip";
+
   type PercentageData = {
     label: string;
     data: number;
@@ -6,6 +8,8 @@
   };
 
   export let dataPercentage: PercentageData[];
+
+  export let emptyLabel: string;
 
   $: total = dataPercentage.reduce((acc, { data }) => acc + data, 0);
   $: cleanedData = (() => {
@@ -16,6 +20,7 @@
       let obj = {
         ...rest,
         percentage,
+        count: data,
         left,
       };
       left += percentage;
@@ -24,11 +29,46 @@
   })();
 </script>
 
-<div class="h-5 rounded-full overflow-hidden {$$props.class}">
+<div
+  class="h-5 rounded-full overflow-hidden relative {$$props.class}"
+  on:click
+  on:keydown
+>
   {#each cleanedData as data}
     <span
-      class="percentage h-full inline-block"
+      on:mouseenter={(e) => {
+        let { x, y, width } = e.currentTarget.getBoundingClientRect();
+        displayTooltip({
+          text: data.label + ": " + data.count,
+          cursor: {
+            x: x + width / 2,
+            y: y - 4,
+          },
+        });
+      }}
+      on:mouseleave={(e) => {
+        displayTooltip(null);
+      }}
+      class="h-full inline-block"
       style="background-color: {data.color};  width: {data.percentage}%;left: {data.left}%"
     />
   {/each}
+  {#if cleanedData.length > 0 || cleanedData.every(({ count }) => count == 0)}
+    <span
+      class="w-full h-full inline-block absolute"
+      on:mouseenter={(e) => {
+        let { x, y, width } = e.currentTarget.getBoundingClientRect();
+        displayTooltip({
+          text: emptyLabel,
+          cursor: {
+            x: x + width / 2,
+            y: y - 4,
+          },
+        });
+      }}
+      on:mouseleave={(e) => {
+        displayTooltip(null);
+      }}
+    />
+  {/if}
 </div>
