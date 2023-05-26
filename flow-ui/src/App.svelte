@@ -6,6 +6,7 @@
   import { getTheme } from "./lib/store/theme";
   import ProjectDetails from "./ui/analysis/project-details.svelte";
   import { projectService } from "./services";
+  import Tooltip from "./components/tooltip.svelte";
 
   onMount(() => {
     getTheme();
@@ -37,3 +38,4 @@
     {/await}
   </section>
 </SystemUi>
+<Tooltip />
