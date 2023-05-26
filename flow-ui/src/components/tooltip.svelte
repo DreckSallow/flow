@@ -9,10 +9,11 @@
 
   function setCursor() {
     setTimeout(() => {
-      let left = (tooltip?.offsetWidth ?? 0) / 2;
+      const left = (tooltip?.offsetWidth ?? 0) / 2;
+      const right = tooltip?.offsetHeight ?? 0;
       cursor = {
         x: ($tooltipStore?.cursor.x ?? left) - left,
-        y: $tooltipStore?.cursor.y || 0,
+        y: ($tooltipStore?.cursor.y ?? right) - right,
       };
     }, 100);
   }
@@ -23,6 +24,12 @@
     cursor = { x: 0, y: 0 };
   }
 </script>
+
+<!-- <span
+  class="visible w-3 h-3 bg-red-300 absolute"
+  style:left="{$tooltipStore?.cursor.x ?? 0}px"
+  style:top="{$tooltipStore?.cursor.y ?? 0}px"
+/> -->
 
 <div
   id="tooltip"
@@ -36,6 +43,9 @@
 </div>
 
 <style>
+  /* span {
+    z-index: 9999;
+  } */
   div {
     z-index: -2;
   }

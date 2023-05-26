@@ -1,5 +1,6 @@
 <script lang="ts">
   import { displayTooltip } from "../lib/store/tooltip";
+  import { getExactPosition } from "../lib/utils";
 
   type PercentageData = {
     label: string;
@@ -37,12 +38,14 @@
   {#each cleanedData as data}
     <span
       on:mouseenter={(e) => {
-        let { x, y, width } = e.currentTarget.getBoundingClientRect();
+        let { width } = e.currentTarget.getBoundingClientRect();
+        const { left, top } = getExactPosition(e.currentTarget);
+
         displayTooltip({
           text: data.label + ": " + data.count,
           cursor: {
-            x: x + width / 2,
-            y: y - 4,
+            x: left + width / 2,
+            y: top - 5,
           },
         });
       }}
@@ -57,12 +60,13 @@
     <span
       class="w-full h-full inline-block absolute"
       on:mouseenter={(e) => {
-        let { x, y, width } = e.currentTarget.getBoundingClientRect();
+        let { width } = e.currentTarget.getBoundingClientRect();
+        const { left, top } = getExactPosition(e.currentTarget);
         displayTooltip({
           text: emptyLabel,
           cursor: {
-            x: x + width / 2,
-            y: y - 4,
+            x: left + width / 2,
+            y: top - 4,
           },
         });
       }}
